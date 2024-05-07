@@ -54,16 +54,20 @@ class Character(Resource):
 
         if character_id is None:
             # Consultar todos los personajes
+            log_console("Procedemos a buscar todos los Personajes", 'INFO', function_name)
             cursor.execute("SELECT id, name, height, mass, birth_year, eye_color FROM Character")
             characters = cursor.fetchall()
             response = [{'id': row['id'], 'name': row['name'], 'height': row['height'], 'mass': row['mass'], 'birth_year': row['birth_year'], 'eye_color': row['eye_color']} for row in characters]
         else:
             # Consultar un personaje por su ID
+            log_console(f"Procedemos a buscar el personaje con id: {character_id}", 'INFO', function_name)
             cursor.execute("SELECT * FROM Character WHERE id = ?", (character_id,))
             character = cursor.fetchone()
             if character:
+                log_console(f"Personaje encontrado con exito para el id: {character_id}", 'INFO', function_name)
                 response = {'id': character['id'], 'name': character['name'], 'height': character['height'], 'mass': character['mass'], 'birth_year': character['birth_year'], 'eye_color': character['eye_color']}
             else:
+                log_console(f"El Personaje NO fue encontrado para el id: {character_id}", 'INFO', function_name)
                 response = {'message': 'Character not found'}
 
         tiempo_final = datetime.now()
@@ -85,10 +89,12 @@ class Character(Resource):
 
         data = request.json
         if not all(key in data for key in ('id', 'name', 'height', 'mass', 'hair_color', 'skin_color', 'eye_color', 'birth_year')):
+            log_console("Algunas de las key enviadas no son correctas o han sido omitidas", 'INFO', function_name)
             tiempo_final = datetime.now()
             log_console(f"Fin de request, duracion de la funcion: {(tiempo_final - tiempo_inicial).total_seconds()}, response 400", 'ERROR', function_name)
             abort(400, "Missing fields")
         if any(data[key] is None for key in data):
+            log_console("Algunas de las key enviadas son nulas", 'INFO', function_name)
             tiempo_final = datetime.now()
             log_console(f"Fin de request, duracion de la funcion: {(tiempo_final - tiempo_inicial).total_seconds()}, response 400", 'ERROR', function_name)
             abort(400, "Fields cannot be null")
@@ -97,6 +103,7 @@ class Character(Resource):
             int(data['height'])
             int(data['mass'])
         except ValueError:
+            log_console("Algunas de las key no respetan la estructura", 'INFO', function_name)
             tiempo_final = datetime.now()
             log_console(f"Fin de request, duracion de la funcion: {(tiempo_final - tiempo_inicial).total_seconds()}, response 400", 'ERROR', function_name)
             abort(400, "ID, Height, and Mass must be integers")
@@ -107,10 +114,12 @@ class Character(Resource):
         cursor.execute("SELECT * FROM Character WHERE id = ?", (data['id'],))
         existing_character = cursor.fetchone()
         if existing_character:
+            log_console("Ya existe un personaje con ese ID", 'INFO', function_name)
             tiempo_final = datetime.now()
             log_console(f"Fin de request, duracion de la funcion: {(tiempo_final - tiempo_inicial).total_seconds()}, response 400", 'ERROR', function_name)
             abort(400, "Character with id {} already exists".format(data['id']))
         
+        log_console("Procedemos a guardar el personaje", 'INFO', function_name)
         character_values = (data['id'], data['name'], data['height'], data['mass'], data['hair_color'], data['skin_color'], data['eye_color'], data['birth_year'])
         cursor.execute("INSERT INTO Character (id, name, height, mass, hair_color, skin_color, eye_color, birth_year) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", character_values)
         db.commit()
@@ -139,6 +148,7 @@ class Character(Resource):
         cursor.execute("SELECT * FROM Character WHERE id = ?", (character_id,))
         character = cursor.fetchone()
         if character:
+            log_console("Procedemos a eliminar el personaje", 'INFO', function_name)
             cursor.execute("DELETE FROM Character WHERE id = ?", (character_id,))
             db.commit()
             db.close()
@@ -146,6 +156,7 @@ class Character(Resource):
             log_console(f"Fin de request, duracion de la funcion: {(tiempo_final - tiempo_inicial).total_seconds()}, response 200", 'INFO', function_name)
             return {'message': 'Character deleted'}, 200
         else:
+            log_console("No encontramos personaje", 'INFO', function_name)
             db.close()
             tiempo_final = datetime.now()
             log_console(f"Fin de request, duracion de la funcion: {(tiempo_final - tiempo_inicial).total_seconds()}, response 400", 'ERROR', function_name)
