@@ -1,0 +1,7 @@
+flask
+flask_restful
+flask_wtf
+requests
+flask-swagger-ui
+flask_sqlalchemy
+marshmallow

@@ -1,0 +1,132 @@
+openapi: 3.0.0
+info:
+  title: API Challenge
+  description: Utilizamos esta API para consultar, agregar o eliminar personajes
+  version: 1.0.0
+paths:
+  /character/getAll:
+    get:
+      summary: Obtener todos los personajes
+      description: Endpoint para obtener todos los personajes
+      responses:
+        '200':
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    height:
+                      type: integer
+                    mass:
+                      type: integer
+                    birth_year:
+                      type: integer
+                    eye_color:
+                      type: string
+  /character/get/{character_id}:
+    get:
+      summary: Obtener personaje por ID
+      description: Endpoint para obtener un personaje por su ID
+      parameters:
+        - in: path
+          name: character_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  height:
+                    type: integer
+                  mass:
+                    type: integer
+                  birth_year:
+                    type: integer
+                  eye_color:
+                    type: string
+        '404':
+          description: Personaje no encontrado
+  /character/add:
+    post:
+      summary: Agregar nuevo personaje
+      description: Endpoint para agregar un nuevo personaje
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                height:
+                  type: integer
+                mass:
+                  type: integer
+                hair_color:
+                  type: string
+                skin_color:
+                  type: string
+                eye_color:
+                  type: string
+                birth_year:
+                  type: integer
+      responses:
+        '201':
+          description: Personaje creado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  height:
+                    type: integer
+                  mass:
+                    type: integer
+                  hair_color:
+                    type: string
+                  skin_color:
+                    type: string
+                  eye_color:
+                    type: string
+                  birth_year:
+                    type: integer
+        '400':
+          description: Error de solicitud
+  /character/delete/{character_id}:
+    delete:
+      summary: Eliminar personaje por ID
+      description: Endpoint para eliminar un personaje por su ID
+      parameters:
+        - in: path
+          name: character_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Personaje eliminado exitosamente
+        '400':
+          description: Personaje no encontrado

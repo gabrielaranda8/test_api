@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  api_challenge:
+    build: .
+    command: python app.py
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/api_challenge
+    environment:
+      - PYTHONUNBUFFERED=1
